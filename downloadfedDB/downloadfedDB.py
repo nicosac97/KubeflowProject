@@ -1,10 +1,12 @@
     
     
-    from torchvision import datasets
-    from torchvision import transforms
-    import torch 
+from torchvision import datasets
+from torchvision import transforms
+import torch 
+import argparse
+from pathlib import Path 
 
-def  get_MNIST(type="iid", n_samples_train=200, n_samples_test=100, n_clients=3, batch_size=25, shuffle=True):
+def get_MNIST(type="iid", n_samples_train=200, n_samples_test=100, n_clients=3, batch_size=25, shuffle=True):
 
    
     def iid_split(dataset, nb_nodes, n_samples_per_node, batch_size, shuffle):
@@ -43,33 +45,38 @@ def  get_MNIST(type="iid", n_samples_train=200, n_samples_test=100, n_clients=3,
 
 if __name__ == '__main__':
     
-# This component receives differnt inputs
-# it only outpus one artifact containing the two downloaded lists of train and test `data`.
-parser = argparse.ArgumentParser()
-parser.add_argument('--data', type=str)
-parser.add_argument('--nsampletrain', type=int)
-parser.add_argument('--nsampletest', type=int)
-parser.add_argument('--nclients', type=int)
-parser.add_argument('--batch_size', type=int)
+    # This component receives differnt inputs
+    # it only outpus one artifact containing the two downloaded lists of train and test `data`.
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', type=str)
+    parser.add_argument('--nsampletrain', type=int)
+    parser.add_argument('--nsampletest', type=int)
+    parser.add_argument('--nclients', type=int)
+    parser.add_argument('--batch_size', type=int)
 
-args = parser.parse_args()
+    args = parser.parse_args()
     
     # Creating the directory where the output file will be created 
     # (the directory may or may not exist).
     Path(args.data).parent.mkdir(parents=True, exist_ok=True)
 
-#Execution of the getMnist function to download and extract the dbs
-mnist_iid_train_dls, mnist_iid_test_dls = get_MNIST("iid",
-    args.nsampletrain, args.nsampletest, args.nclients, 
-    args.batch_size, shuffle =True)
+    #Execution of the getMnist function to download and extract the dbs
+    mnist_iid_train_dls, mnist_iid_test_dls = get_MNIST("iid",
+        args.nsampletrain, args.nsampletest, args.nclients, 
+        args.batch_size, shuffle =True)
     
-        # Saves the train and test set to the out_file
-    with open(args.data, 'w') as out_file:
-        for el in mnist_iid_train_dls:
-            out_file.write(el+'\n')
-        for it in mnist_iid_test_dls:
-            out_file.write(el+'\n')
 
+        # Creates a json object based on `data`
+    traindata_json = json.dumps(mnist_iid_train_dls)
+    testdata_json=json.dumps(mnist_iid_test_dls)
+
+
+
+
+            # Saves the train and test set to the out_file
+    with open(args.data, 'w') as out_file:
+         json.dump(traindata_json, out_file)
+         json.dump(testdata_json, out_file)
 
 
         
