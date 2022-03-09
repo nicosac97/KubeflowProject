@@ -6,12 +6,13 @@ inputs:
 - {name: Nclients, type: Integer , description: ' Number of clients to be used for FedAVG '}
 - {name: Batchsize , type: Integer , description: ' Number of units composing the batch for trainining'}
 outputs:
-- {name: Data, type: LocalPath, description: 'Path where train and test data will be stored.'}
+- {name: trainData, type: LocalPath, description: 'Path where train  data will be stored.'}
+- {name: testData, type: LocalPath, description: 'Path where test data will be stored.'}
 implementation:
   container:
     image: fernandolpz/only-tests:download_data_v3
     command: [
-      python, downloadfedDB.py,
+      python, downloadFedDB.py,
       
       --data,
       {outputPath: Data},

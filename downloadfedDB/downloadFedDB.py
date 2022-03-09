@@ -48,35 +48,31 @@ if __name__ == '__main__':
     # This component receives differnt inputs
     # it only outpus one artifact containing the two downloaded lists of train and test `data`.
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str)
+    parser.add_argument('--datatrain', type=str)
+    parser.add_argument('--datatest', type=str)
     parser.add_argument('--nsampletrain', type=int)
     parser.add_argument('--nsampletest', type=int)
     parser.add_argument('--nclients', type=int)
     parser.add_argument('--batch_size', type=int)
-
     args = parser.parse_args()
     
     # Creating the directory where the output file will be created 
-    # (the directory may or may not exist).
-    Path(args.data).parent.mkdir(parents=True, exist_ok=True)
+    # # (the directory may or may not exist).
+    Path(args.datatrain).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.datatest).parent.mkdir(parents=True, exist_ok=True)
 
     #Execution of the getMnist function to download and extract the dbs
     mnist_iid_train_dls, mnist_iid_test_dls = get_MNIST("iid",
         args.nsampletrain, args.nsampletest, args.nclients, 
         args.batch_size, shuffle =True)
     
+    #save data to the two output files
+    trainfw=open(args.datatrain,'wb')
+    torch.save(mnist_iid_train_dls, trainfw)
+    testfw=open(args.datatest,'wb')
+    torch.save(mnist_iid_test_dls, testfw)
+   
 
-        # Creates a json object based on `data`
-    traindata_json = json.dumps(mnist_iid_train_dls)
-    testdata_json=json.dumps(mnist_iid_test_dls)
-
-
-
-
-            # Saves the train and test set to the out_file
-    with open(args.data, 'w') as out_file:
-         json.dump(traindata_json, out_file)
-         json.dump(testdata_json, out_file)
 
 
         
