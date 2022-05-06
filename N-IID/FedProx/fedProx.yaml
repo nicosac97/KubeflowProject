@@ -1,0 +1,35 @@
+name: Execute FedAVG algorithm
+description: This will execute given the right inputs a FedProx algorithm run 
+inputs:
+- {name: TrainData, type: String, description: 'Path where train  data is stored from the previous step.'}
+- {name: TestData, type: String, description: 'Path where test data is stored from the previous step'}
+- {name: Niter, type: Integer,default: 10, description: 'Number of iterations of the algorithm to be run'}
+- {name: Epochs, type: Integer,default: 2, description: 'Number of epochs to execute in each iterations of the algorithm to be run '}
+- {name: Lr ,type: Float , default: 0.1 ,description: 'Learning rate to be used for decay and SGD optimization of the CNN'}
+- {name : Mu , type: Float, defualt: 0.3 , description:: 'Value that fedProx algorithm use to optimize the differences between clients' }
+outputs:
+- {name: Losslist, type: String, description: 'Path where the final list of loss values per iteration will be stored.'}
+- {name: Acclist, type: String, description: 'Path where the final list of accuracy values per iteration will be stored.'}
+implementation:
+  container:
+    image: nicolosacconehub/fedprox:first
+    command: [
+      python3, 
+      /pipeline/fedProx.py,
+      --traindatapath ,
+      { inputPath: TrainData },
+      --testdatapath ,
+      { inputPath: TestData },
+      --n_iter ,
+      { inputValue: Niter},
+      --epochs ,
+      { inputValue: Epochs},
+      --lr ,
+      { inputValue: Lr},
+      --mu ,
+      { inputValue: Mu },
+      --outputloss ,
+      {outputPath: Losslist},
+      --outputaccuracy ,
+      {outputPath: Acclist},
+    ]

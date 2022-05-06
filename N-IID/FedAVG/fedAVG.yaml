@@ -1,0 +1,33 @@
+name: Execute FedAVG algorithm
+description: Download data from torchvision datasets
+inputs:
+- {name: TrainData, type: String, description: 'Path where train  data is stored from the previous step.'}
+- {name: TestData, type: String, description: 'Path where test data is stored from the previous step'}
+- {name: Niter, type: Integer, description: 'Number of iterations of the algorithm to be run'}
+- {name: Epochs, type: Integer, description: 'Number of epochs to execute in each iterations of the algorithm to be run '}
+- {name: Lr ,type: Float , description: 'Learning rate to be used for decay and SGD optimization of the CNN'}
+outputs:
+- {name: Losslist, type: String, description: 'Path where the final list of loss values per iteration will be stored.'}
+- {name: Acclist, type: String, description: 'Path where the final list of accuracy values per iteration will be stored.'}
+implementation:
+  container:
+    image: nicolosacconehub/fedavg:first
+    command: [
+      python3, 
+      /pipeline/fedAVG.py,
+      --traindatapath tmp/train,
+      { inputPath: TrainData },
+      --testdatapath tmp/test,
+      { inputPath: TestData },
+      --n_iter 10,
+      { inputPath: Niter},
+      --epochs 2,
+      { inputPath: Epochs},
+      --lr 0.1,
+      { inputPath: Lr},
+      --outputloss tmp/loss,
+      {outputPath: Losslist},
+      --outputaccuracy tmp/acc,
+      {outputPath: Acclist},
+
+    ]
